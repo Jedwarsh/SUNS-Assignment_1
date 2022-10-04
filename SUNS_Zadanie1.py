@@ -8,11 +8,13 @@ train_data = pd.read_csv('Z1-data/train.csv')
 
 
 # CHANGING THE TYPE OF THE RELEASE DATE
-def date_working(data):
+def date_int_form(data):
+
     # Filling up the NaN values
     data["D_release_date"] = data["D_release_date"].fillna("1 Jan, 2001")
 
     for i in range(data["D_release_date"].size):
+
         # Splitting up the date
         split_up_date = data["D_release_date"].iloc[i].split()
 
@@ -40,6 +42,7 @@ def date_working(data):
 
 # CHANGING THE TYPE OF THE NUMBER OF OWNERS
 def number_of_player(data):
+
     for i in range(data["D_owners"].size):
 
         # Splitting up the number of owners
@@ -59,6 +62,69 @@ def number_of_player(data):
     return data
 
 
+# CONVERTING THE GENRES INTO INTEGER FORM
+def convert_genres(data):
+
+    # Filling up the NaN values
+    data["D_genre"] = data["D_genre"].fillna("Action")
+
+    # Getting every possible combination of genres
+    x = data["D_genre"].unique()
+
+    # Getting every single type of genre
+    y = []
+    types = []
+    for i in range(len(x)):
+        y.append(x[i].split(','))
+        for j in range(len(y[i])):
+            types.append(y[i][j].replace(' ', ''))
+
+    # Removing duplicates and sorting the list
+    types = list(set(types))
+    types.sort()
+
+    for i in range(data["D_genre"].size):
+
+        # Creating necessary variables
+        genre_number = ""
+        genre_int = 0
+
+        # Splitting up the data for a specific game
+        genre_str_split = data["D_genre"].iloc[i].split(',')
+
+        for j in range(len(genre_str_split)):
+
+            # Removing spaces from genre names
+            genre_str_split[j] = genre_str_split[j].replace(' ', '')
+
+            # Storing the genres in numerical format but in a string
+            genre_number += str(types.index(genre_str_split[j]))
+
+            # Converting the string into integer
+            if j == len(genre_str_split)-1:
+                genre_int = int(genre_number)
+
+            # Adding a 0 between genres to easily distinguish them
+            else:
+                genre_number += "0"
+
+        # Replacing the string value with a new integer value
+        data["D_genre"].iloc[i] = genre_int
+
+    # Returning the reformatted data frame
+    return data
+
+
+# Removing useless columns
+train_data = train_data.drop(['D_appid', 'D_reviews', 'has_website_linked', 'coming_soon'], axis=1)
+
+# Removing rows with NaN values
+train_data = train_data.dropna()
+
+train_data = convert_genres(train_data)
+
 train_data = number_of_player(train_data)
-train_data = date_working(train_data)
+
+train_data = date_int_form(train_data)
+
 print("asd")
