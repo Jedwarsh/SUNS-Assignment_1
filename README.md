@@ -1,6 +1,6 @@
 # SUNS-Assignment_1
 
-<h1>What I have learned</h1>
+<h3>What I have learned</h3>
 
 -Preparing dataset for neural network
 
